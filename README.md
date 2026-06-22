@@ -1,7 +1,25 @@
-# Tauri + Vanilla
+# Restaurant-POS
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
+A modern, high-performance Point of Sale (POS) system built for restaurants. Designed to handle orders, menu management, and sales tracking with a seamless user experience.
 
-## Recommended IDE Setup
+## 🚀 Features
+*   **Desktop-First:** Built with Tauri for a lightweight and secure desktop experience.
+*   **User-Friendly Interface:** Intuitive design for fast-paced restaurant environments.
+*   **Menu Management:** Efficiently manage your food items, categories, and pricing.
+*   **Order Management:** Real-time tracking of orders from initiation to completion.
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## 🛠 Tech Stack
+*   **Frontend:** React (or your specific UI framework)
+*   **Backend/Native:** Rust (via Tauri)
+*   **Build Tool:** Vite
+*   **Version Control:** Git
+
+## 📦 Getting Started
+
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) and [Rust](https://www.rust-lang.org/tools/install) installed on your system.
+
+### Installation
+1. Clone the repository:
+```bash
+   git clone [https://github.com/3amo0r/Restaurant-POS.git](https://github.com/3amo0r/Restaurant-POS.git)

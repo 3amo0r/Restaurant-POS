@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>نظام إدارة المطعم المحترف</title>
+</head>
+<body>
+
+  <!-- 1. شاشة تسجيل الدخول الموحدة والمؤمنة -->
+  <div id="login-screen" class="login-overlay">
+    <div class="login-card">
+      <div class="login-brand">
+        <h2 id="login-system-title">نظام إدارة المطعم</h2>
+        <p>اختر حسابك الوظيفي وأدخل بيانات الدخول</p>
+      </div>
+      
+      <!-- شبكة اختيار الرتبة (بدون onclick لضمان عدم توقف الصفحة) -->
+      <div class="roles-grid" id="roles-selection-grid">
+        <button class="role-btn" id="btn-login-cashier">
+          <span class="role-icon">💰</span>
+          <span class="role-name">كاشير</span>
+        </button>
+        <button class="role-btn" id="btn-login-manager">
+          <span class="role-icon">💼</span>
+          <span class="role-name">مدير الفرع</span>
+        </button>
+        <button class="role-btn" id="btn-login-owner">
+          <span class="role-icon">👑</span>
+          <span class="role-name">مالك المطعم</span>
+        </button>
+      </div>
+
+      <!-- نموذج إدخال البيانات -->
+      <div id="login-credentials-form" style="display: none; margin-top: 20px;">
+        <h4 id="selected-role-title" style="margin-bottom: 15px; color: var(--color-primary);">حساب: </h4>
+        <div class="form-group">
+          <label>اسم المستخدم:</label>
+          <input type="text" id="login-username" placeholder="أدخل اسم المستخدم">
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور:</label>
+          <input type="password" id="login-password" placeholder="أدخل كلمة المرور">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+          <button class="save-settings-btn" id="btn-submit-login" style="margin:0; flex: 2;">دخول للسيستم 🚀</button>
+          <button class="delete-btn" id="btn-back-to-roles" style="margin:0; flex: 1; background: #7f8c8d;">رجوع</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. واجهة السيستم الرئيسية -->
+  <div id="main-app-container" class="app-container" style="display: none;">
+    <aside class="sidebar">
+      <div id="app-logo" class="logo">جاري التحميل..</div>
+      <nav>
+        <button id="nav-tables-btn" class="nav-btn active">📊 لوحة التحكم والطاولات</button>
+        <button id="nav-kitchen-btn" class="nav-btn">🍳 شاشة عرض المطبخ</button>
+        <button id="admin-inventory-btn" class="nav-btn" style="display: none;">📦 المخازن والمكونات</button>
+        <button id="admin-analytics-btn" class="nav-btn" style="display: none;">📈 التقارير والأرباح</button>
+        <button id="admin-menu-btn" class="nav-btn" style="display: none;">🍔 إدارة قائمة الطعام</button>
+        <button id="admin-settings-btn" class="nav-btn" style="display: none;">⚙️ إعدادات المطعم</button>
+        <button class="nav-btn logout-btn-nav" id="btn-logout">🚪 تسجيل الخروج</button>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <h2 id="main-screen-title">شاشة الإدارة الرئيسية</h2>
+        <div class="user-badge">
+          <span id="user-role-display">المستخدم</span>
+        </div>
+      </header>
+      
+      <div class="content-area">
+        <!-- قسم الطاولات الرئيسي -->
+        <div id="tables-view" class="view-section">
+          <div id="tables-grid" class="tables-grid"></div>
+        </div>
+
+        <!-- قسم شاشة عرض المطبخ الحية -->
+        <div id="kitchen-view" class="view-section" style="display: none;">
+          <div id="kitchen-orders-grid" class="kitchen-grid"></div>
+        </div>
+
+        <!-- قسم التقارير والأرباح والتحليلات -->
+        <div id="analytics-view" class="view-section" style="display: none;">
+          <div class="analytics-cards-grid">
+            <div class="stat-card">
+              <span class="stat-icon">💰</span>
+              <div class="stat-info">
+                <h4>إجمالي المبيعات (شامل)</h4>
+                <p><span id="stat-total-sales">0.00</span> ج.م</p>
+              </div>
+            </div>
+            <div class="stat-card" style="border-top: 4px solid #e67e22;">
+              <span class="stat-icon">💼</span>
+              <div class="stat-info">
+                <h4>إجمالي حصيلة الخدمة (12%)</h4>
+                <p><span id="stat-total-service">0.00</span> ج.م</p>
+              </div>
+            </div>
+            <div class="stat-card" style="border-top: 4px solid #9b59b6;">
+              <span class="stat-icon">🏛️</span>
+              <div class="stat-info">
+                <h4>إجمالي ضريبة الـ VAT (14%)</h4>
+                <p><span id="stat-total-vat">0.00</span> ج.م</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-management-container" style="margin-top: 20px;">
+            <div class="menu-table-card" style="flex: 2;">
+              <h3>📝 سجل الفواتير القانونية المفصلة</h3>
+              <div class="table-wrapper">
+                <table class="pos-table">
+                  <thead>
+                    <tr>
+                      <th>رقم الفاتورة</th>
+                      <th>المصدر</th>
+                      <th>الصافي</th>
+                      <th>الخدمة (12%)</th>
+                      <th>الضريبة (14%)</th>
+                      <th>الإجمالي النهائي</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-sales-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="settings-card spec-card" style="flex: 1;">
+              <h3>🔥 الأصناف الأكثر مبيعاً</h3>
+              <ul id="admin-bestsellers-list" style="list-style: none; padding: 0; margin: 0;"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- قسم إدارة المخازن والمكونات -->
+        <div id="inventory-view" class="view-section" style="display: none;">
+          <div class="menu-management-container">
+            <div class="settings-card spec-card">
+              <h3>📦 إضافة عنصر للمخزن</h3>
+              <div class="form-group">
+                <label>اسم المكون/المادة الخام:</label>
+                <input type="text" id="inv-item-name" placeholder="مثال: لحم مفروم كندوز">
+              </div>
+              <div class="form-group">
+                <label>الكمية الحالية المتوفرة:</label>
+                <input type="number" id="inv-item-qty" placeholder="مثال: 50">
+              </div>
+              <div class="form-group">
+                <label>وحدة القياس:</label>
+                <select id="inv-item-unit" class="form-select">
+                  <option value="كيلوجرام">كيلوجرام (كجم)</option>
+                  <option value="لتر">لتر</option>
+                  <option value="عدد/قطعة">عدد / قطعة</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>حد الأمان (التنبيه عند النقص):</label>
+                <input type="number" id="inv-item-alert" placeholder="مثال: 10">
+              </div>
+              <button class="save-settings-btn" id="btn-add-inventory">إضافة المادة للمخزن</button>
+            </div>
+
+            <div class="menu-table-card">
+              <h3>📋 جرد كميات المخازن الحية</h3>
+              <div class="table-wrapper">
+                <table class="pos-table">
+                  <thead>
+                    <tr>
+                      <th>المادة الخام</th>
+                      <th>الرصيد الحالي</th>
+                      <th>الوحدة</th>
+                      <th>الحالة</th>
+                      <th>التحكم</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-inventory-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- قسم إدارة المنيو والوجبات المطور -->
+        <div id="menu-management-view" class="view-section" style="display: none;">
+          <div class="menu-management-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div class="settings-card spec-card" style="flex: 1; min-width: 300px;">
+              <h3>📁 إدارة الأقسام</h3>
+              <div class="form-group">
+                <label>إضافة قسم جديد:</label>
+                <div style="display: flex; gap: 5px;">
+                  <input type="text" id="new-category-name" placeholder="مثال: مشويات، طواجن..">
+                  <button class="save-settings-btn" id="btn-add-category" style="margin:0; padding: 0 15px;">➕</button>
+                </div>
+              </div>
+              
+              <hr style="border: none; border-top: 1px solid var(--color-border); margin: 20px 0;">
+              
+              <h3>🍔 إضافة صنف جديد للمنيو</h3>
+              <div class="form-group">
+                <label>اسم الوجبة/الصنف:</label>
+                <input type="text" id="new-item-name" placeholder="مثال: تشيكن رانش فخم">
+              </div>
+              <div class="form-group">
+                <label>السعر (ج.م):</label>
+                <input type="number" id="new-item-price" placeholder="مثال: 150">
+              </div>
+              <div class="form-group">
+                <label>القسم التابع له:</label>
+                <select id="new-item-category" class="form-select">
+                  <!-- الأقسام الديناميكية ستظهر هنا -->
+                </select>
+              </div>
+              <button class="save-settings-btn" id="btn-add-menu-item">إضافة الصنف للمنيو فوراً</button>
+            </div>
+
+            <div class="menu-table-card" style="flex: 2; min-width: 500px;">
+              <h3>📋 قائمة الطعام والتحكم في الأسعار الحية</h3>
+              <div class="table-wrapper">
+                <table class="pos-table">
+                  <thead>
+                    <tr>
+                      <th>الاسم</th>
+                      <th>القسم</th>
+                      <th>السعر الحالي (ج.م)</th>
+                      <th>تعديل السعر الجديد</th>
+                      <th>التحكم</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-menu-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- قسم إعدادات البيانات والأمان المطور -->
+        <div id="settings-view" class="view-section" style="display: none;">
+          <div class="menu-management-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
+            
+            <!-- كارت إعدادات المطعم العام -->
+            <div class="settings-card" style="flex: 1; min-width: 300px;">
+              <h3>⚙️ تهيئة بيانات النظام والمطعم</h3>
+              <div class="form-group">
+                <label>اسم المطعم في النظام:</label>
+                <input type="text" id="setup-restaurant-name" placeholder="أدخل اسم المطعم">
+              </div>
+              <div class="form-group">
+                <label>عدد طاولات الصالة:</label>
+                <input type="number" id="setup-tables-count" value="6">
+              </div>
+              <button class="save-settings-btn" id="btn-save-restaurant-setup">حفظ وتحديث النظام فوراً</button>
+            </div>
+
+            <!-- كارت حماية الحسابات وتغيير الباسوردات -->
+            <div class="settings-card spec-card" style="flex: 1; min-width: 300px;">
+              <h3>🔒 إدارة أمان الحسابات وكلمات المرور</h3>
+              <div class="form-group">
+                <label>اختر الحساب المراد تعديله:</label>
+                <select id="secure-role-select" class="form-select">
+                  <option value="cashier">كاشير (Cashier)</option>
+                  <option value="manager">مدير الفرع (Manager)</option>
+                  <option value="owner">مالك المطعم (Owner)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>اسم المستخدم الجديد:</label>
+                <input type="text" id="secure-username-input">
+              </div>
+              <div class="form-group">
+                <label>كلمة المرور الجديدة:</label>
+                <input type="password" id="secure-password-input" placeholder="أدخل الباسورد الجديد">
+              </div>
+              <button class="save-settings-btn" id="btn-save-security-settings" style="background: #e67e22;">تحديث بيانات الحساب الحالية</button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- نافذة المنيو والطلبات (Modal) -->
+  <div id="order-modal" class="modal-overlay">
+    <div class="modal-box">
+      <header class="modal-header">
+        <h3 id="modal-table-title">تفاصيل الطلب - طاولة</h3>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </header>
+
+      <div class="modal-body">
+        <div class="menu-section">
+          <div class="menu-categories">
+            <button class="category-btn active">الكل</button>
+          </div>
+          <div id="menu-items-grid" class="menu-items-grid"></div>
+        </div>
+
+        <div class="invoice-section">
+          <h4>الفاتورة الحالية</h4>
+          <div id="invoice-items" class="invoice-items"></div>
+          <div class="invoice-summary">
+            <div class="summary-row"><span>المجموع الصافي:</span><span id="subtotal-price">0.00</span> ج.م</div>
+            <div class="summary-row" style="color: #e67e22; font-size: 14px;"><span>الخدمة (12%):</span><span id="service-price">0.00</span> ج.م</div>
+            <div class="summary-row" style="color: #9b59b6; font-size: 14px;"><span>القيمة المضافة (14%):</span><span id="vat-price">0.00</span> ج.م</div>
+            <hr style="border: none; border-top: 1px solid var(--color-border); margin: 8px 0;">
+            <div class="summary-row" style="font-weight: bold; font-size: 18px;"><span>الإجمالي المجموع:</span><span id="total-price">0.00</span> ج.م</div>
+            <button id="checkout-btn" class="checkout-btn">إرسال للمطبخ وطباعة</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة معاينة بون الطباعة الحراري -->
+  <div id="receipt-print-area" class="receipt-template">
+    <div class="receipt-header">
+      <h2 id="receipt-brand-name">اسم المطعم</h2>
+      <p id="receipt-table-num">طاولة: 1</p>
+      <p id="receipt-date-time">التاريخ: --/--/----</p>
+    </div>
+    <hr class="receipt-divider">
+    <table class="receipt-table">
+      <thead>
+        <tr>
+          <th>الصنف</th>
+          <th style="text-align:center;">العدد</th>
+          <th style="text-align:left;">السعر</th>
+        </tr>
+      </thead>
+      <tbody id="receipt-items-body"></tbody>
+    </table>
+    <hr class="receipt-divider">
+    <div class="receipt-summary">
+      <div class="r-row"><span>المجموع الصافي:</span><span id="r-subtotal">0.00</span> ج.م</div>
+      <div class="r-row"><span>الخدمة (12%):</span><span id="r-service">0.00</span> ج.م</div>
+      <div class="r-row"><span>الضريبة (14%):</span><span id="r-vat">0.00</span> ج.م</div>
+      <div class="r-row total-row"><span>الإجمالي النهائي:</span><span id="r-total">0.00</span> ج.م</div>
+    </div>
+    <div class="receipt-footer">
+      <p>شكراً لزيارتكم! ❤️</p>
+      <p>نظام إدارة المطاعم الذكي</p>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
